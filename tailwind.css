@@ -39,3 +39,6 @@
 .possible {
   @apply bg-red-600 shadow-xl;
 }
+.location {
+  @apply font-thin text-sm;
+}

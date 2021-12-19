@@ -17,6 +17,7 @@ const App = () => {
 
   return (
     <div className="wrapper">
+      <span className="location">{locations}</span>
       <div className="board animate__animated animate__zoomInUp">
         {resultBoard.map((boardX, X) =>
           boardX.map((boardY, Y) => (
