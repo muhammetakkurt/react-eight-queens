@@ -2387,7 +2387,7 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-right: auto;
   margin-bottom: 1rem;
   display: flex;
-  width: 1024px;
+  width: 100%;
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
