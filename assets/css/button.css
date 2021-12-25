@@ -1,0 +1,10 @@
+.button-group {
+  @apply flex justify-around items-center;
+
+  .button {
+    @apply ml-4 text-xs border px-2 py-2 rounded-lg bg-red-300 text-black font-bold mb-2;
+    &:disabled {
+      @apply opacity-50;
+    }
+  }
+}

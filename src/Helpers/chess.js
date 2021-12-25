@@ -2,28 +2,61 @@
  * @author Muhammet Akkurt
  * @github https://github.com/muhammetakkurt
  */
-
-import { makeDimensionalArray } from "./helpers";
+import { getMessage, makeDimensionalArray } from "./helpers";
 
 let x = 0;
 let y;
 class Chess {
-  constructor(X = 0, Y = 0, setLocations, setResultBoard) {
+  constructor(
+    X = 0,
+    Y = 0,
+    setSuccessXLocation,
+    setResultBoard,
+    resultBoard = null
+  ) {
     this.X = X;
     this.Y = Y;
-    this.setLocations = setLocations;
+    this.x = X;
+    this.y = Y;
+    this.setSuccessXLocation = setSuccessXLocation;
     this.setResultBoard = setResultBoard;
+    this.board =
+      resultBoard !== null
+        ? resultBoard
+        : makeDimensionalArray(8, 8, this.emptyValue);
   }
   emptyValue = " ";
   pathValue = "×";
-  board = makeDimensionalArray(8, 8, this.emptyValue);
   queenIcon = "♕";
+  setSelectedChess = async () => {
+    x = this.X;
+    y = this.Y;
+
+    if (
+      this.board[x][0] === this.pathValue &&
+      this.board[x][1] === this.pathValue &&
+      this.board[x][2] === this.pathValue &&
+      this.board[x][3] === this.pathValue &&
+      this.board[x][4] === this.pathValue &&
+      this.board[x][5] === this.pathValue &&
+      this.board[x][6] === this.pathValue &&
+      this.board[x][7] === this.pathValue
+    ) {
+      throw getMessage(99);
+    } else if (this.board[x][y] === this.pathValue) {
+      throw getMessage(10);
+    } else {
+      this.setQueen();
+      await this.markPosibblePathsOfQueen();
+      this.setSuccessXLocation(x + 1);
+      await this.sleep(100);
+    }
+  };
   walkChess = async () => {
     for (x = 0; x < 8; x++) {
       y = this.Y;
 
-      this.setLocations(`${x + 1}, ${y + 1}`);
-      await this.sleep(500);
+      this.setSuccessXLocation(x);
       while (true) {
         if (
           this.board[x][0] === this.pathValue &&
@@ -35,17 +68,17 @@ class Chess {
           this.board[x][6] === this.pathValue &&
           this.board[x][7] === this.pathValue
         ) {
-          await this.sleep(1000);
           this.clearBoard();
         } else if (this.board[x][y] === this.pathValue) {
           this.findAWay();
         } else {
           this.setQueen();
-          await this.sleep(500);
+          await this.sleep(10);
           break;
         }
       }
       await this.markPosibblePathsOfQueen();
+      this.setSuccessXLocation(x + 1);
     }
   };
 
@@ -70,7 +103,6 @@ class Chess {
   setQueen = () => {
     this.board[x][y] = this.queenIcon;
     this.setResultBoard(this.board);
-    this.setLocations(`${x + 1}, ${y + 1}`);
   };
 
   markPosibblePathsOfQueen = async () => {
@@ -80,10 +112,8 @@ class Chess {
         while (newX < 8) {
           this.board[newX][y] = this.pathValue;
           this.setResultBoard(this.board);
-
           newX++;
-          this.setLocations(`${newX + 1}, ${y + 1}`);
-          await this.sleep(50);
+          await this.sleep(10);
         }
       };
 
@@ -95,8 +125,7 @@ class Chess {
           this.setResultBoard(this.board);
           newY--;
           newX++;
-          this.setLocations(`${newX + 1}, ${newY + 1}`);
-          await this.sleep(50);
+          await this.sleep(10);
         }
       };
 
@@ -107,8 +136,7 @@ class Chess {
           this.setResultBoard(this.board);
 
           newY--;
-          this.setLocations(`${x + 1}, ${newY + 1}`);
-          await this.sleep(50);
+          await this.sleep(10);
         }
       };
 
@@ -121,20 +149,17 @@ class Chess {
 
           newX++;
           newYI++;
-          this.setLocations(`${newX + 1}, ${newYI + 1}`);
-          await this.sleep(50);
+          await this.sleep(10);
         }
       };
       const toRight = async () => {
         let newYI = y + 1;
         while (newYI < 8) {
-          // to right
           this.board[x][newYI] = this.pathValue;
           this.setResultBoard(this.board);
 
           newYI++;
-          this.setLocations(`${x + 1}, ${newYI + 1}`);
-          await this.sleep(50);
+          await this.sleep(10);
         }
       };
 
