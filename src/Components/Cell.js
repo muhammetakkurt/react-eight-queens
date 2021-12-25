@@ -1,6 +1,6 @@
 import React from "react";
 
 const Cell = (props) => {
-  return <div {...props}>{props.children}</div>;
+  return <button {...props}>{props.children}</button>;
 };
 export default React.memo(Cell);

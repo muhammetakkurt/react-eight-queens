@@ -1,0 +1,10 @@
+.modal {
+  transition: opacity 0.25s ease;
+  &.modal-active {
+    overflow-x: hidden;
+    overflow-y: visible !important;
+  }
+  &.model-disable {
+    @apply opacity-0 pointer-events-none;
+  }
+}

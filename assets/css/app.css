@@ -1,0 +1,30 @@
+@import url("animate.css");
+@import url("cell.css");
+@import url("button.css");
+@import url("modal.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.wrapper {
+  @apply mx-auto h-screen w-full flex flex-col justify-center items-center bg-gray-900 text-5xl text-white;
+}
+
+.board {
+  @apply mx-auto w-full inline-grid items-center justify-center text-center grid-cols-8 bg-gray-700 max-w-5xl;
+}
+
+.header {
+  @apply mx-auto w-[1024px] flex flex-row justify-around items-center justify-items-end;
+}
+.game-life-container {
+  @apply flex items-center justify-center;
+  .game-life {
+    @apply ml-2;
+    &:before {
+      @apply text-3xl text-red-700 items-center flex;
+      content: "❤";
+    }
+  }
+}
