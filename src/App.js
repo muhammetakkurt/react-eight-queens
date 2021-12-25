@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Chess from "./Helpers/chess";
 import { getMessage, makeDimensionalArray } from "./Helpers/helpers";
 import { Board, Header, Modal } from "./Components";
@@ -9,15 +9,17 @@ import { setStatus } from "./Store/gameStarted";
 
 const App = () => {
   let defaultModalParameters = getMessage(101);
+  let CHESS = new Chess();
+
   const dispatch = useDispatch();
   const gameStatus = useSelector((state) => state.gameStarted.status);
   const gameLifeCount = useSelector((state) => state.gameLifeCount.value);
-  const [autoFinder, setAutoFinder] = useState(false);
 
+  const [autoFinder, setAutoFinder] = useState(false);
   const [modalStatus, setModalStatus] = useState({
     showModal: true,
     message: defaultModalParameters.message,
-    information: defaultModalParameters.information,
+    buttonCaption: defaultModalParameters.buttonCaption,
     action: "startGame",
   });
 
@@ -25,9 +27,17 @@ const App = () => {
     makeDimensionalArray(8, 8, " ")
   );
   const [successXLocation, setSuccessXLocation] = useState(0);
-  let CHESS = new Chess();
 
-  useEffect(() => {
+  const handleRestartGame = useCallback(() => {
+    dispatch(setStatus({ status: "started" }));
+    setSuccessXLocation(0);
+    setResultBoard(makeDimensionalArray(8, 8, " "));
+    dispatch(setDefault());
+    dispatch(hidePath());
+    setAutoFinder(false);
+  }, [dispatch]);
+
+  const gameStatusChecker = useCallback(() => {
     switch (gameStatus) {
       case "continue":
         setModalStatus((prevState) => ({
@@ -36,7 +46,7 @@ const App = () => {
         }));
         dispatch(setStatus({ status: "started" }));
         break;
-      case "replayed" || ("continue" && gameLifeCount === 0):
+      case "replayed":
         handleRestartGame();
         setModalStatus((prevState) => ({
           ...prevState,
@@ -52,25 +62,21 @@ const App = () => {
       default:
         break;
     }
-  }, [gameStatus]);
+  }, [dispatch, gameStatus, handleRestartGame]);
+
+  useEffect(() => gameStatusChecker(), [gameStatusChecker]);
 
   useEffect(() => {
-    setModalStatus({
-      ...getMessage(100),
-      showModal: true,
-    });
-  }, [successXLocation === 8 && autoFinder === false]);
-
-  const handleRestartGame = () => {
-    dispatch(setStatus({ status: "started" }));
-    setSuccessXLocation(0);
-    setResultBoard(makeDimensionalArray(8, 8, " "));
-    dispatch(setDefault());
-    dispatch(hidePath());
-  };
+    if (successXLocation === 8 && autoFinder === false) {
+      setModalStatus({
+        ...getMessage(100),
+        showModal: true,
+      });
+    }
+  }, [successXLocation, autoFinder]);
 
   const handleClickCell = (X, Y) => {
-    if (["started", "continue"].includes(gameStatus)) {
+    if (["started", "continue"].includes(gameStatus) && autoFinder === false) {
       let chess = new Chess(
         X,
         Y,
@@ -79,17 +85,22 @@ const App = () => {
         resultBoard
       );
       chess.setSelectedChess().catch(async (error) => {
-        dispatch(decrease());
-        dispatch(showPath());
-        if (gameLifeCount === 0) {
-          setModalStatus({
-            ...getMessage(11),
-            showModal: true,
-          });
-        } else {
-          setModalStatus({ ...error, showModal: !modalStatus.showModal });
-        }
+        const showModal = () => {
+          if (gameLifeCount === 0) {
+            setModalStatus({
+              ...getMessage(11),
+              showModal: true,
+            });
+          } else {
+            setModalStatus({ ...error, showModal: true });
+          }
+        };
+
+        await dispatch(decrease());
+        await dispatch(showPath());
+        await showModal();
       });
+    } else {
     }
   };
 
@@ -100,7 +111,8 @@ const App = () => {
     let chess = new Chess(X, Y, setSuccessXLocation, setResultBoard);
     chess.clearBoard();
     await chess.walkChess();
-    setAutoFinder(false);
+    await chess.sleep(4000);
+    await setAutoFinder(false);
   };
 
   return (
@@ -120,8 +132,8 @@ const App = () => {
       </div>
       <Modal
         active={modalStatus.showModal}
-        text={modalStatus.message}
-        buttonText={modalStatus.information}
+        message={modalStatus.message}
+        buttonCaption={modalStatus.buttonCaption}
         action={modalStatus.action}
       />
     </div>

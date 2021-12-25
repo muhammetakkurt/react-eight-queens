@@ -1,4 +1,5 @@
 .modal {
+  @apply fixed w-full h-full top-0 left-0 flex items-center justify-center;
   transition: opacity 0.25s ease;
   &.modal-active {
     overflow-x: hidden;
@@ -6,5 +7,21 @@
   }
   &.model-disable {
     @apply opacity-0 pointer-events-none;
+  }
+
+  .modal-overlay {
+    @apply absolute w-full h-full bg-gray-900 opacity-50;
+  }
+
+  .modal-container {
+    @apply bg-white w-11/12 md:max-w-md mx-auto rounded shadow-lg z-50 overflow-y-auto;
+  }
+
+  .modal-content {
+    @apply py-14 text-left px-6;
+
+    .modal-text {
+      @apply text-black text-4xl flex items-center text-center justify-center;
+    }
   }
 }
