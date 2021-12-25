@@ -16,7 +16,7 @@
 }
 
 .header {
-  @apply mx-auto w-[1024px] flex flex-row justify-around items-center justify-items-end;
+  @apply mx-auto w-[1024px] flex flex-row justify-around items-center justify-items-end mb-4;
 }
 .game-life-container {
   @apply flex items-center justify-center;
